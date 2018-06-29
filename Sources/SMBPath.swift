@@ -17,6 +17,11 @@ public struct SMBPath {
         self.directories = []
     }
 
+    public init(volume: SMBVolume, directories: [SMBDirectory]) {
+        self.volume = volume
+        self.directories = directories
+    }
+
     /// expects a URL like: smb://host/volume/somePath
     /// this will fail to init if the server is not currently available
     public init?(fromURL url: URL) {

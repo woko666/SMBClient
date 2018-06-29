@@ -21,6 +21,52 @@ public struct SMBFile {
     public private(set) var writeAt: Date?
     public private(set) var modifiedAt: Date?
 
+    public init?(fromURL url: URL) {
+        guard let host = url.host else {
+            return nil
+        }
+        guard let server = SMBServer(hostname: host) else {
+            return nil
+        }
+        // url.pathComponents gives us a leading slash,
+        // from above example this is:
+        // ["/", "volume", "somePath"]
+        var pathComponents = url.pathComponents
+        // can't have a valid connection without a host and a volume
+        guard pathComponents.count >= 2 else {
+            return nil
+        }
+
+        // pop off the leading '/' that pathComponents gives us
+        var popedComponent = "/"
+        while popedComponent == "/" && pathComponents.count > 0 {
+            popedComponent = pathComponents.removeFirst()
+        }
+        let volumeName = popedComponent
+        let volume = SMBVolume(server: server, name: volumeName)
+
+        // build directories from whatever is left
+        var pathDirectories = [SMBDirectory]()
+        while pathComponents.count > 0 {
+            var pathName = pathComponents.removeFirst()
+            if let p = pathName.removingPercentEncoding {
+                pathName = p
+            }
+            let dir = SMBDirectory(name: pathName)
+            pathDirectories.append(dir)
+        }
+        var directories = pathDirectories
+        if let last = directories.last {
+            self.name = last.name
+            directories.removeLast()
+        } else {
+            return nil
+        }
+        self.path = SMBPath(volume: volume, directories: directories)
+        self.fileSize = 0
+        self.allocationSize = 0
+    }
+
     init?(stat: OpaquePointer, parentPath: SMBPath) {
         self.path = parentPath
         guard let cName = smb_stat_name(stat) else { return nil }
