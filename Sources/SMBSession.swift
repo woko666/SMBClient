@@ -356,6 +356,29 @@ public class SMBSession {
         }
     }
 
+    func statFile(file: SMBFile) -> Result<SMBFile, SMBSessionError> {
+        let treeConnResult = treeConnect(volume: file.path.volume)
+
+        switch treeConnResult {
+        case .failure:
+            return Result.failure(SMBSessionError.unableToConnect)
+        case .success(let tree):
+            let file2 = self.request(file: file, inTree: tree)
+            guard let file3 = file2 else { return Result.failure(SMBSessionError.unableToConnect) }
+            return Result.success(file3)
+        }
+    }
+
+    internal func request(file: SMBFile, inTree treeId: smb_tid) -> SMBFile? {
+        let stat = fileStat(treeId: treeId, file: file)
+        switch stat {
+        case .failure:
+            return nil
+        case .success(let f):
+            return f
+        }
+    }
+
     internal func fileStat(treeId: smb_tid, file: SMBFile) -> Result<SMBFile, SMBSessionError> {
         let filePathCString = file.downloadPath.cString(using: .utf8)
         guard let stat = smb_fstat(self.rawSession, treeId, filePathCString) else {
