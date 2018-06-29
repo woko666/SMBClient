@@ -14,7 +14,7 @@ import UIKit
 import libdsm
 
 public protocol SessionStreamDownloadTaskDelegate: class {
-    func downloadTask()
+    func downloadTask(didFinishDownloadingData: Data)
     func downloadTask(totalBytesReceived: UInt64, totalBytesExpected: UInt64, data: Data)
     func downloadTask(didCompleteWithError: SessionDownloadTask.SessionDownloadError)
 }
@@ -25,6 +25,7 @@ public class SessionStreamDownloadTask: SessionTask {
     var bytesExpected: UInt64?
     var file: SMBFile?
     var seekOffset: UInt64 = 0
+    var data = Data()
     public weak var delegate: SessionStreamDownloadTaskDelegate?
 
     var hashForFilePath: String {
@@ -156,6 +157,7 @@ public class SessionStreamDownloadTask: SessionTask {
             self.bytesReceived = self.bytesReceived! + UInt64(bytesRead)
             //self.delegateQueue.async {
             if let readData = readData {
+                self.data.append(readData)
                 self.delegate?.downloadTask(totalBytesReceived: self.bytesReceived!,
                                             totalBytesExpected: self.bytesExpected!,
                                             data: readData)
@@ -173,7 +175,7 @@ public class SessionStreamDownloadTask: SessionTask {
 
         self.state = .completed
         self.delegateQueue.async {
-            self.delegate?.downloadTask()
+            self.delegate?.downloadTask(didFinishDownloadingData: self.data)
         }
         self.cleanupBlock(treeId: treeId, fileId: fileId)
     }
