@@ -32,6 +32,7 @@
 		C3BAD9761F799A8F009316F4 /* SMBVolume.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BAD9751F799A8F009316F4 /* SMBVolume.swift */; };
 		C3BAD97A1F79AB70009316F4 /* SMBDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BAD9791F79AB70009316F4 /* SMBDirectory.swift */; };
 		C3BAD97C1F79ABC8009316F4 /* SMBItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BAD97B1F79ABC8009316F4 /* SMBItem.swift */; };
+		F80F3A8420E6905400562B7B /* SessionStreamDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F3A8320E6905400562B7B /* SessionStreamDownloadTask.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 		C3BAD9751F799A8F009316F4 /* SMBVolume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBVolume.swift; sourceTree = "<group>"; };
 		C3BAD9791F79AB70009316F4 /* SMBDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBDirectory.swift; sourceTree = "<group>"; };
 		C3BAD97B1F79ABC8009316F4 /* SMBItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBItem.swift; sourceTree = "<group>"; };
+		F80F3A8320E6905400562B7B /* SessionStreamDownloadTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStreamDownloadTask.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +133,7 @@
 				C334494F1F59D2E600A0EB61 /* SMBSession.swift */,
 				C3929C4E1F5F302D0014B804 /* SessionTask.swift */,
 				C3929C4C1F5F2F6A0014B804 /* SessionDownloadTask.swift */,
+				F80F3A8320E6905400562B7B /* SessionStreamDownloadTask.swift */,
 				C3929C521F606E880014B804 /* SessionUploadTask.swift */,
 				C3929C581F630A030014B804 /* Result.swift */,
 				C3BAD9751F799A8F009316F4 /* SMBVolume.swift */,
@@ -321,6 +324,7 @@
 				C3BAD9761F799A8F009316F4 /* SMBVolume.swift in Sources */,
 				C3BAD97A1F79AB70009316F4 /* SMBDirectory.swift in Sources */,
 				C33449541F59FB6000A0EB61 /* SMBFile.swift in Sources */,
+				F80F3A8420E6905400562B7B /* SessionStreamDownloadTask.swift in Sources */,
 				C36F2BCC1F579566008B96C4 /* NetBIOSNameService.swift in Sources */,
 				C3929C4F1F5F302D0014B804 /* SessionTask.swift in Sources */,
 				C3929C531F606E880014B804 /* SessionUploadTask.swift in Sources */,

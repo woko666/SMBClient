@@ -31,6 +31,7 @@ public class SMBSession {
 
     // tasks
     var downloadTasks: [SessionDownloadTask] = []
+    var streamDownloadTasks: [SessionStreamDownloadTask] = []
     var uploadTasks: [SessionUploadTask] = []
     lazy var taskQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -274,6 +275,18 @@ public class SMBSession {
                                        destinationFileURL: destinationFileURL,
                                        delegate: delegate)
         self.downloadTasks.append(task)
+        task.resume()
+        return task
+    }
+
+    @discardableResult public func downloadStreamTaskForFile(file: SMBFile,
+                                                             offset: UInt64 = 0,
+                                                             delegate: SessionStreamDownloadTaskDelegate?) -> SessionStreamDownloadTask {
+        let task = SessionStreamDownloadTask(session: self,
+                                       sourceFile: file,
+                                       offset: offset,
+                                       delegate: delegate)
+        self.streamDownloadTasks.append(task)
         task.resume()
         return task
     }
