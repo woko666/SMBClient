@@ -356,7 +356,7 @@ public class SMBSession {
         }
     }
 
-    func statFile(file: SMBFile) -> Result<SMBFile, SMBSessionError> {
+    public func statFile(file: SMBFile) -> Result<SMBFile, SMBSessionError> {
         let treeConnResult = treeConnect(volume: file.path.volume)
 
         switch treeConnResult {
