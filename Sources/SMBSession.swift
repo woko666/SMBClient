@@ -12,6 +12,7 @@ import libdsm
 public class SMBSession {
     private var rawSession = smb_session_new()
     internal var serialQueue = DispatchQueue(label: "SMBSession")
+    static let lock = Lock()
 
     lazy var dataQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -91,9 +92,9 @@ public class SMBSession {
             return Result.failure(SMBSessionError.unableToConnect)
         }
 
-        if shareCount.pointee == 0 {
+        /*if shareCount.pointee == 0 {
             return Result.success([])
-        }
+        }*/
         var results: [SMBVolume] = []
 
         var i = 0
@@ -114,7 +115,7 @@ public class SMBSession {
         }
 
         smb_share_list_destroy(list)
-        shareCount.deallocate(capacity: 1)
+        shareCount.deallocate()//capacity: 1)
 
         return Result.success(results)
     }
@@ -149,6 +150,10 @@ public class SMBSession {
         case .failure(let error):
             return Result.failure(error)
         }
+        
+        defer {
+            _ = self.treeDisconnect(treeId:treeId)
+        }
 
         // \SampleMedia\*
         let statList = smb_find(self.rawSession, treeId, path.searchPath.cString(using: .utf8))
@@ -156,9 +161,9 @@ public class SMBSession {
             return Result.failure(SMBSessionError.unableToConnect)
         }
         let listCount = smb_stat_list_count(statList)
-        if listCount == 0 {
+        /*if listCount == 0 {
             return Result.success([])
-        }
+        }*/
 
         var results: [SMBItem] = []
 
@@ -259,8 +264,15 @@ public class SMBSession {
                               self.server.hostname.cString(using: .utf8),
                               self.credentials.userName.cString(using: .utf8),
                               self.credentials.password.cString(using: .utf8))
-        if smb_session_login(self.rawSession) != 0 {
-            return SMBSessionError.authenticationFailed
+        var error:SMBSessionError? = nil
+        // smb_session_login is NOT threadsafe - https://github.com/videolabs/libdsm/issues/74
+        SMBSession.lock.locked {
+            if smb_session_login(self.rawSession) != 0 {
+                error = SMBSessionError.authenticationFailed
+            }
+        }
+        if let error = error {
+            return error;
         }
         self.connected = true
 
@@ -286,7 +298,7 @@ public class SMBSession {
                                        sourceFile: file,
                                        offset: offset,
                                        delegate: delegate)
-        self.streamDownloadTasks.append(task)
+        //self.streamDownloadTasks.append(task)
         task.resume()
         return task
     }
@@ -346,6 +358,12 @@ public class SMBSession {
         }
         return Result.success(treeId)
     }
+    
+    public func disconnect() {
+        guard let s = self.rawSession else { return }
+        smb_session_destroy(s)
+        self.rawSession = nil
+    }
 
     internal func treeDisconnect(treeId: smb_tid) -> SMBSessionError? {
         let result = smb_tree_disconnect(self.rawSession, treeId)
@@ -363,6 +381,9 @@ public class SMBSession {
         case .failure:
             return Result.failure(SMBSessionError.unableToConnect)
         case .success(let tree):
+            defer {
+                _ = self.treeDisconnect(treeId: tree)
+            }
             let file2 = self.request(file: file, inTree: tree)
             guard let file3 = file2 else { return Result.failure(SMBSessionError.unableToConnect) }
             return Result.success(file3)
@@ -384,11 +405,13 @@ public class SMBSession {
         guard let stat = smb_fstat(self.rawSession, treeId, filePathCString) else {
             return Result.failure(SMBSessionError.unableToConnect)
         }
-        guard let resultFile = SMBFile(stat: stat, parentPath: file.path) else {
+        defer {
             smb_stat_destroy(stat)
+        }
+        guard let resultFile = SMBFile(stat: stat, parentPath: file.path) else {
             return Result.failure(SMBSessionError.unableToConnect)
         }
-        smb_stat_destroy(stat)
+
         return Result.success(resultFile)
     }
 
@@ -424,6 +447,10 @@ public class SMBSession {
         case .success(let t):
             treeId = t
         }
+        
+        defer {
+            _ = self.treeDisconnect(treeId: treeId)
+        }
 
         let mvResult = smb_file_mv(self.rawSession, treeId, oldPath.cString(using: .utf8), newPath.cString(using: .utf8))
         if mvResult != 0 {
@@ -447,6 +474,10 @@ public class SMBSession {
             return SMBDeleteError.failed
         case .success(let t):
             treeId = t
+        }
+        
+        defer {
+            _ = self.treeDisconnect(treeId: treeId)
         }
 
         let result = smb_file_rm(self.rawSession, treeId, path.cString(using: .utf8))
@@ -487,6 +518,24 @@ public class SMBSession {
     deinit {
         guard let s = self.rawSession else { return }
         smb_session_destroy(s)
+    }
+    
+    final class Lock {
+        private var mutex = pthread_mutex_t()
+        
+        public init() {
+            pthread_mutex_init(&self.mutex, nil)
+        }
+        
+        deinit {
+            pthread_mutex_destroy(&self.mutex)
+        }
+        
+        public func locked(_ f: () -> ()) {
+            pthread_mutex_lock(&self.mutex)
+            f()
+            pthread_mutex_unlock(&self.mutex)
+        }
     }
 }
 

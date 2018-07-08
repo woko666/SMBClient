@@ -77,10 +77,10 @@ public struct SMBFile {
         self.fileSize = smb_stat_get(stat, SMB_STAT_SIZE)
         self.allocationSize = smb_stat_get(stat, SMB_STAT_ALLOC_SIZE)
 
-        self.createdAt = SMBFile.dateFrom(timestamp: smb_stat_get(stat, SMB_STAT_CTIME))
+        /*self.createdAt = SMBFile.dateFrom(timestamp: smb_stat_get(stat, SMB_STAT_CTIME))
         self.modifiedAt = SMBFile.dateFrom(timestamp: smb_stat_get(stat, SMB_STAT_MTIME))
         self.accessedAt = SMBFile.dateFrom(timestamp: smb_stat_get(stat, SMB_STAT_ATIME))
-        self.writeAt = SMBFile.dateFrom(timestamp: smb_stat_get(stat, SMB_STAT_WTIME))
+        self.writeAt = SMBFile.dateFrom(timestamp: smb_stat_get(stat, SMB_STAT_WTIME))*/
     }
 
     init?(path: SMBPath, name: String) {
