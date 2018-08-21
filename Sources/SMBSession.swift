@@ -150,9 +150,9 @@ public class SMBSession {
         case .failure(let error):
             return Result.failure(error)
         }
-        
+
         defer {
-            _ = self.treeDisconnect(treeId:treeId)
+            _ = self.treeDisconnect(treeId: treeId)
         }
 
         // \SampleMedia\*
@@ -264,7 +264,7 @@ public class SMBSession {
                               self.server.hostname.cString(using: .utf8),
                               self.credentials.userName.cString(using: .utf8),
                               self.credentials.password.cString(using: .utf8))
-        var error:SMBSessionError? = nil
+        var error: SMBSessionError? = nil
         // smb_session_login is NOT threadsafe - https://github.com/videolabs/libdsm/issues/74
         SMBSession.lock.locked {
             if smb_session_login(self.rawSession) != 0 {
@@ -272,7 +272,7 @@ public class SMBSession {
             }
         }
         if let error = error {
-            return error;
+            return error
         }
         self.connected = true
 
@@ -358,7 +358,7 @@ public class SMBSession {
         }
         return Result.success(treeId)
     }
-    
+
     public func disconnect() {
         guard let s = self.rawSession else { return }
         smb_session_destroy(s)
@@ -447,7 +447,7 @@ public class SMBSession {
         case .success(let t):
             treeId = t
         }
-        
+
         defer {
             _ = self.treeDisconnect(treeId: treeId)
         }
@@ -475,7 +475,7 @@ public class SMBSession {
         case .success(let t):
             treeId = t
         }
-        
+
         defer {
             _ = self.treeDisconnect(treeId: treeId)
         }
@@ -519,19 +519,19 @@ public class SMBSession {
         guard let s = self.rawSession else { return }
         smb_session_destroy(s)
     }
-    
+
     final class Lock {
         private var mutex = pthread_mutex_t()
-        
+
         public init() {
             pthread_mutex_init(&self.mutex, nil)
         }
-        
+
         deinit {
             pthread_mutex_destroy(&self.mutex)
         }
-        
-        public func locked(_ f: () -> ()) {
+
+        public func locked(_ f: () -> Void) {
             pthread_mutex_lock(&self.mutex)
             f()
             pthread_mutex_unlock(&self.mutex)
