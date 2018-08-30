@@ -52,7 +52,7 @@ public class SessionTask {
         case .failure:
             return nil
         case .success(let f):
-            return f
+            return file
         }
     }
 
