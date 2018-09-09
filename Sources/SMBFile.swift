@@ -72,7 +72,7 @@ public struct SMBFile {
         guard let cName = smb_stat_name(stat) else { return nil }
         let pathAndFile = String(cString: cName).split(separator: "\\")
         guard let n = pathAndFile.last else { return nil }
-        self.name = n.decomposedStringWithCanonicalMapping
+        self.name = n.precomposedStringWithCanonicalMapping
 
         self.fileSize = smb_stat_get(stat, SMB_STAT_SIZE)
         self.allocationSize = smb_stat_get(stat, SMB_STAT_ALLOC_SIZE)
@@ -85,9 +85,13 @@ public struct SMBFile {
 
     init?(path: SMBPath, name: String) {
         self.path = path
-        self.name = name
+        self.name = SMBFile.getUnicodeNFC(name)
         self.fileSize = 0
         self.allocationSize = 0
+    }
+    
+    static func getUnicodeNFC(_ text:String) -> String {
+        return (text as NSString).precomposedStringWithCanonicalMapping
     }
 
     public var isHidden: Bool {

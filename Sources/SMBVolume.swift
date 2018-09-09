@@ -14,7 +14,7 @@ public struct SMBVolume {
 
     init(server: SMBServer, name: String) {
         self.server = server
-        self.name = name
+        self.name = SMBFile.getUnicodeNFC(name)
     }
 
     public var path: SMBPath {

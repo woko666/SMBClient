@@ -22,7 +22,7 @@ public struct SMBDirectory {
     }
 
     internal init(name: String) {
-        self.name = name
+        self.name = SMBFile.getUnicodeNFC(name)
     }
 
     public var isHidden: Bool {

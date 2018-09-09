@@ -13,13 +13,13 @@ public struct SMBServer {
     public let ipAddress: UInt32
 
     public init(hostname: String, ipAddress: UInt32) {
-        self.hostname = hostname
+        self.hostname = SMBFile.getUnicodeNFC(hostname)
         self.ipAddress = ipAddress
     }
 
     // fails initiation if ipAddress lookup fails
     public init?(hostname: String) {
-        self.hostname = hostname
+        self.hostname = SMBFile.getUnicodeNFC(hostname)
         let ns = NetBIOSNameService()
         if let addr = ns.resolveIPAddress(forName: self.hostname, ofType: .fileServer) {
             self.ipAddress = addr

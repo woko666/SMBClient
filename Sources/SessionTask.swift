@@ -50,7 +50,7 @@ public class SessionTask {
         let fileStat = self.session.fileStat(treeId: treeId, file: file)
         switch fileStat {
         case .failure:
-            return nil
+            return file
         case .success(let f):
             return file
         }
