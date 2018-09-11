@@ -86,7 +86,7 @@ public class SessionStreamDownloadTask: SessionTask {
             return
         }
 
-        self.bytesExpected = file.fileSize - seekOffset
+        self.bytesExpected = file.fileSize > seekOffset ? file.fileSize - seekOffset : 0
 
         // ### Open file handle
         let fopen = self.session.fileOpen(treeId: treeId, path: file.downloadPath, mod: UInt32(SMB_MOD_READ))

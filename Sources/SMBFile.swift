@@ -93,6 +93,9 @@ public struct SMBFile {
     static func getUnicodeNFC(_ text:String) -> String {
         return (text as NSString).precomposedStringWithCanonicalMapping
     }
+    static func getUnicodeNFD(_ text:String) -> String {
+        return (text as NSString).decomposedStringWithCanonicalMapping
+    }
 
     public var isHidden: Bool {
         return self.name.first == "."
