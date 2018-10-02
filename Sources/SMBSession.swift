@@ -416,12 +416,15 @@ public class SMBSession {
     }
 
     internal func fileClose(fileId: smb_fd) {
-        if fileId > 0 {
+        if fileId > 0, rawSession != nil {
             smb_fclose(self.rawSession, fileId)
         }
     }
 
     internal func fileOpen(treeId: smb_tid, path: String, mod: UInt32) -> Result<smb_fd, SMBSessionError> {
+        if rawSession == nil {
+            return Result.failure(SMBSessionError.unableToConnect)
+        }
         var fd = smb_fd(0)
         let openResult = smb_fopen(self.rawSession, treeId, SMBFile.getUnicodeNFC(path).cString(using: .utf8), mod, &fd)
         if openResult != 0 {
