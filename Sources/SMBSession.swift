@@ -83,7 +83,7 @@ public class SMBSession {
             return Result.failure(error)
         }
 
-        var list: smb_share_list? = nil
+        var list: smb_share_list?
         let shareCount = UnsafeMutablePointer<Int>.allocate(capacity: 1)
         shareCount.pointee = 0
 
@@ -264,7 +264,7 @@ public class SMBSession {
                               self.server.hostname.cString(using: .utf8),
                               self.credentials.userName.cString(using: .utf8),
                               self.credentials.password.cString(using: .utf8))
-        var error: SMBSessionError? = nil
+        var error: SMBSessionError?
         // smb_session_login is NOT threadsafe - https://github.com/videolabs/libdsm/issues/74
         SMBSession.lock.locked {
             if smb_session_login(self.rawSession) != 0 {

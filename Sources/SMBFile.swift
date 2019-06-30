@@ -89,11 +89,11 @@ public struct SMBFile {
         self.fileSize = 0
         self.allocationSize = 0
     }
-    
-    static func getUnicodeNFC(_ text:String) -> String {
+
+    static func getUnicodeNFC(_ text: String) -> String {
         return (text as NSString).precomposedStringWithCanonicalMapping
     }
-    static func getUnicodeNFD(_ text:String) -> String {
+    static func getUnicodeNFD(_ text: String) -> String {
         return (text as NSString).decomposedStringWithCanonicalMapping
     }
 

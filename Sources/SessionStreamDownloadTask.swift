@@ -131,7 +131,7 @@ public class SessionStreamDownloadTask: SessionTask {
         var didAlreadyError = false
 
         repeat {
-            var readData: Data? = nil
+            var readData: Data?
             let readResult = self.session.fileRead(fileId: fileId, bufferSize: UInt(bufferSize))
             switch readResult {
             case .failure(let err):
