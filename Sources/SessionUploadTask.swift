@@ -191,7 +191,7 @@ public class SessionUploadTask: SessionTask {
             totalBytesWritten += UInt64(bytesWritten)
         } while (totalBytesWritten < totalByteCount)
 
-        pointer.deinitialize()
+        pointer.deinitialize(count: chunkSize)
         pointer.deallocate()
 
         self.session.fileClose(fileId: fileId)

@@ -77,7 +77,7 @@ public struct SMBPath {
         if self.directories.count == 0 {
             return slash + volume.name
         }
-        let dirs: [String] = self.directories.flatMap { $0.name }
+        let dirs: [String] = self.directories.compactMap { $0.name }
         return slash + volume.name + slash + dirs.joined(separator: slash)
     }
 
@@ -86,7 +86,7 @@ public struct SMBPath {
         if self.directories.count == 0 {
             return "*"
         }
-        let dirs: [String] = self.directories.flatMap { $0.name }
+        let dirs: [String] = self.directories.compactMap { $0.name }
         return slash + dirs.joined(separator: slash) + slash + "*"
     }
 
